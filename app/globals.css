@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/* BuildPro Brand Colors */
+:root {
+	--primary: #1e40af; /* Deep Blue */
+	--primary-dark: #1e3a8a;
+	--primary-light: #3b82f6;
+	--secondary: #f97316; /* Vibrant Orange */
+	--secondary-dark: #ea580c;
+	--accent: #0ea5e9; /* Sky Blue */
+	--dark: #1e293b;
+	--light-bg: #f8fafc;
+}
+
+@keyframes shimmer {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+@keyframes slide-in-right {
+	0% {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+	100% {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes fade-out {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.animate-slide-in-right {
+	animation: slide-in-right 0.3s ease-out;
+}
+
+.animate-fade-out {
+	animation: fade-out 0.2s ease-out;
+}
+
+.loader-buildpro {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 2147483647;
+	background: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.loader-buildpro::after {
+	content: '';
+	width: 60px;
+	height: 60px;
+	border: 6px solid #e5e7eb;
+	border-top-color: #1e40af;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+.loader,
+.ajax-loading-block-window {
+	position: absolute;
+	width: 350px;
+	height: 150px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-image: url("https://timco.co.uk/Themes/uptown/Content/img/timco-loading.gif");
+	background-repeat: no-repeat;
+}
+
+.brand-tagline {
+	font-family: var(--font-brand), system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+	color: #1e293b;
+	font-weight: 700;
+	font-size: 24px;
+	line-height: 1.4;
+	text-align: center;
+	letter-spacing: -0.02em;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 768px) {
+	.brand-tagline {
+		font-size: 28px;
+	}
+}
+
+@media (min-width: 1024px) {
+	.brand-tagline {
+		font-size: 32px;
+	}
+}
+
+.section-title {
+	font-size: 28px;
+	font-weight: 700;
+	color: #1e40af;
+	text-align: center;
+	margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+	.section-title {
+		font-size: 32px;
+	}
+}
