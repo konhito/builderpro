@@ -6,6 +6,7 @@ import AppRouteLoader from "./ui/AppRouteLoader";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/contexts/CartContext";
+import AuthProvider from "@/components/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,16 +48,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${brand.variable} antialiased min-h-screen flex flex-col`}
       >
-        <CartProvider>
-          <Suspense fallback={null}>
-            <AppRouteLoader />
-          </Suspense>
-          <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Suspense fallback={null}>
+              <AppRouteLoader />
+            </Suspense>
+            <Navbar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

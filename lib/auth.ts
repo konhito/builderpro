@@ -19,12 +19,12 @@ export const auth = betterAuth({
   },
   socialProviders: {
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientId: process.env.GOOGLE_CLIENT_ID || "dummy-client-id",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "dummy-client-secret",
     },
   },
   trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
-  secret: process.env.BETTER_AUTH_SECRET as string,
+  secret: process.env.BETTER_AUTH_SECRET || "dev-secret-key-change-in-production",
 });
 
 export type Session = typeof auth.$Infer.Session;

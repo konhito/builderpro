@@ -10,6 +10,7 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("emailVerified").notNull().default(false),
   image: text("image"),
+  role: text("role").notNull().default("user"), // user, admin, super_admin
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 });
@@ -124,6 +125,38 @@ export const orderItem = pgTable("orderItem", {
   createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
+// Products table for admin management
+export const product = pgTable("product", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  sku: text("sku").notNull().unique(),
+  title: text("title").notNull(),
+  description: text("description"),
+  price: numeric("price", { precision: 10, scale: 2 }),
+  originalPrice: numeric("originalPrice", { precision: 10, scale: 2 }),
+  size: text("size"),
+  quantity: text("quantity"),
+  category: text("category"),
+  image: text("image"),
+  images: text("images"), // JSON array of image URLs
+  specifications: text("specifications"), // JSON object
+  availability: text("availability").default("in_stock"),
+  isActive: boolean("isActive").notNull().default(true),
+  isFeatured: boolean("isFeatured").notNull().default(false),
+  stockQuantity: integer("stockQuantity").default(0),
+  minOrderQuantity: integer("minOrderQuantity").default(1),
+  maxOrderQuantity: integer("maxOrderQuantity"),
+  weight: numeric("weight", { precision: 8, scale: 3 }),
+  dimensions: text("dimensions"), // JSON object {length, width, height}
+  tags: text("tags"), // JSON array of tags
+  seoTitle: text("seoTitle"),
+  seoDescription: text("seoDescription"),
+  metaKeywords: text("metaKeywords"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+});
+
 // Types
 export type User = typeof user.$inferSelect;
 export type Session = typeof session.$inferSelect;
@@ -132,5 +165,6 @@ export type Verification = typeof verification.$inferSelect;
 export type Cart = typeof cart.$inferSelect;
 export type Order = typeof order.$inferSelect;
 export type OrderItem = typeof orderItem.$inferSelect;
+export type Product = typeof product.$inferSelect;
 
 

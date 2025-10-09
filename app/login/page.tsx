@@ -18,13 +18,34 @@ export default function LoginPage() {
 		setLoading(true);
 
 		try {
-			await signIn.email({
+			const result = await signIn.email({
 				email,
 				password,
 				callbackURL: "/",
 			});
-			success("Successfully signed in! Redirecting...");
-			setTimeout(() => router.push("/"), 1000);
+			
+			console.log("Login result:", result);
+			
+			// Check if result is a Response object
+			if (result instanceof Response) {
+				const data = await result.json();
+				console.log("Response data:", data);
+				
+				if (data.error) {
+					const errorMessage = typeof data.error === 'string' ? data.error : JSON.stringify(data.error);
+					showError(errorMessage);
+					return;
+				}
+			} else if (result && typeof result === 'object' && 'error' in result) {
+				const errorResult = result as { error: unknown };
+				const errorMessage = typeof errorResult.error === 'string' ? errorResult.error : JSON.stringify(errorResult.error);
+				showError(errorMessage);
+				return;
+			}
+			
+			success("Successfully signed in!");
+			// Let the session update naturally, don't force redirect
+			window.location.href = "/";
 		} catch (err) {
 			const errorMessage = err instanceof Error ? err.message : "Failed to sign in. Please check your credentials.";
 			showError(errorMessage);
