@@ -1,4 +1,3 @@
-import { requireAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { product } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -10,7 +9,7 @@ interface EditProductPageProps {
 }
 
 export default async function EditProductPage({ params }: EditProductPageProps) {
-  await requireAdmin();
+  // Admin authentication is handled by the layout
 
   const { id } = await params;
   const productData = await db

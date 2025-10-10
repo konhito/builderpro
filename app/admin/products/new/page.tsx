@@ -1,8 +1,7 @@
-import { requireAdmin } from "@/lib/admin-auth";
 import ProductForm from "@/components/admin/ProductForm";
 
 export default async function NewProductPage() {
-  await requireAdmin();
+  // Admin authentication is handled by the layout
 
   return (
     <div className="space-y-6">

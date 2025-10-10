@@ -1,8 +1,7 @@
-import { requireAdmin } from "@/lib/admin-auth";
 import ExcelImportForm from "@/components/admin/ExcelImportForm";
 
 export default async function ImportProductsPage() {
-  await requireAdmin();
+  // Admin authentication is handled by the layout
 
   return (
     <div className="space-y-6">

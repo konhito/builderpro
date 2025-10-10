@@ -1,4 +1,4 @@
-import { requireAdmin } from "@/lib/admin-auth";
+// Admin authentication is handled by the layout
 import { db } from "@/lib/db";
 import { product } from "@/lib/db/schema";
 import { desc, eq, like, or } from "drizzle-orm";
@@ -19,7 +19,7 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  await requireAdmin();
+  // Admin authentication is handled by the layout
 
   const page = parseInt(searchParams.page || "1");
   const limit = 20;
