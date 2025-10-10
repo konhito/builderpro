@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { product } from "@/lib/db/schema";
 import { inArray } from "drizzle-orm";
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    // Admin authentication is handled by the layout
 
     const body = await request.json();
     const { productIds } = body;

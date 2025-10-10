@@ -153,6 +153,126 @@ export const product = pgTable("product", {
   seoTitle: text("seoTitle"),
   seoDescription: text("seoDescription"),
   metaKeywords: text("metaKeywords"),
+  
+  // Additional fields from Excel file
+  summary: text("summary"),
+  brand: text("brand"),
+  group: text("group"),
+  type: text("type"),
+  subType: text("subType"),
+  countryOfOrigin: text("countryOfOrigin"),
+  ceMarked: text("ceMarked"),
+  barcode: text("barcode"),
+  commodityCode: text("commodityCode"),
+  intrastat: text("intrastat"),
+  packQuantity: numeric("packQuantity", { precision: 10, scale: 2 }),
+  packQuantityUnit: text("packQuantityUnit"),
+  packType: text("packType"),
+  sellingUnit: text("sellingUnit"),
+  
+  // Dimensions
+  itemLength: numeric("itemLength", { precision: 10, scale: 2 }),
+  itemLengthUnit: text("itemLengthUnit"),
+  itemWidth: numeric("itemWidth", { precision: 10, scale: 2 }),
+  itemWidthUnit: text("itemWidthUnit"),
+  itemHeight: numeric("itemHeight", { precision: 10, scale: 2 }),
+  itemHeightUnit: text("itemHeightUnit"),
+  
+  // Packaging dimensions
+  packagingLength: numeric("packagingLength", { precision: 10, scale: 2 }),
+  packagingLengthUnit: text("packagingLengthUnit"),
+  packagingWidth: numeric("packagingWidth", { precision: 10, scale: 2 }),
+  packagingWidthUnit: text("packagingWidthUnit"),
+  packagingHeight: numeric("packagingHeight", { precision: 10, scale: 2 }),
+  packagingHeightUnit: text("packagingHeightUnit"),
+  packageWeight: numeric("packageWeight", { precision: 10, scale: 3 }),
+  packageWeightUnit: text("packageWeightUnit"),
+  
+  // Material composition
+  paperWeight: numeric("paperWeight", { precision: 10, scale: 2 }),
+  plasticWeight: numeric("plasticWeight", { precision: 10, scale: 2 }),
+  plasticRecycledContent: numeric("plasticRecycledContent", { precision: 5, scale: 2 }),
+  woodWeight: numeric("woodWeight", { precision: 10, scale: 2 }),
+  aluminumWeight: numeric("aluminumWeight", { precision: 10, scale: 2 }),
+  steelWeight: numeric("steelWeight", { precision: 10, scale: 2 }),
+  glassWeight: numeric("glassWeight", { precision: 10, scale: 2 }),
+  otherWeight: numeric("otherWeight", { precision: 10, scale: 2 }),
+  
+  // Secondary packaging
+  secondaryPackaging: text("secondaryPackaging"),
+  secondaryPackagingLength: numeric("secondaryPackagingLength", { precision: 10, scale: 2 }),
+  secondaryPackagingLengthUnit: text("secondaryPackagingLengthUnit"),
+  secondaryPackagingWidth: numeric("secondaryPackagingWidth", { precision: 10, scale: 2 }),
+  secondaryPackagingWidthUnit: text("secondaryPackagingWidthUnit"),
+  secondaryPackagingHeight: numeric("secondaryPackagingHeight", { precision: 10, scale: 2 }),
+  secondaryPackagingHeightUnit: text("secondaryPackagingHeightUnit"),
+  secondaryPackagingWeight: numeric("secondaryPackagingWeight", { precision: 10, scale: 3 }),
+  secondaryPackagingWeightUnit: text("secondaryPackagingWeightUnit"),
+  
+  // Outer packaging
+  outerPackaging: text("outerPackaging"),
+  outerPackagingLength: numeric("outerPackagingLength", { precision: 10, scale: 2 }),
+  outerPackagingLengthUnit: text("outerPackagingLengthUnit"),
+  outerPackagingWidth: numeric("outerPackagingWidth", { precision: 10, scale: 2 }),
+  outerPackagingWidthUnit: text("outerPackagingWidthUnit"),
+  outerPackagingHeight: numeric("outerPackagingHeight", { precision: 10, scale: 2 }),
+  outerPackagingHeightUnit: text("outerPackagingHeightUnit"),
+  outerPackagingWeight: numeric("outerPackagingWeight", { precision: 10, scale: 3 }),
+  outerPackagingWeightUnit: text("outerPackagingWeightUnit"),
+  
+  // Shipping & storage
+  unNumber: text("unNumber"),
+  unNumberDescription: text("unNumberDescription"),
+  ufiNumber: text("ufiNumber"),
+  hazardousGoods: text("hazardousGoods"),
+  properShippingName: text("properShippingName"),
+  containsLiquidContent: boolean("containsLiquidContent"),
+  flammable: boolean("flammable"),
+  ageVerificationRequired: boolean("ageVerificationRequired"),
+  expiryPeriodMonths: numeric("expiryPeriodMonths", { precision: 5, scale: 2 }),
+  
+  // Technical documents
+  dopCeFileName: text("dopCeFileName"),
+  dopCeFileLink: text("dopCeFileLink"),
+  dopUkcaFileName: text("dopUkcaFileName"),
+  dopUkcaFileLink: text("dopUkcaFileLink"),
+  docCeFileName: text("docCeFileName"),
+  docCeFileLink: text("docCeFileLink"),
+  docUkcaFileName: text("docUkcaFileName"),
+  docUkcaFileLink: text("docUkcaFileLink"),
+  sds1FileName: text("sds1FileName"),
+  sds1FileLink: text("sds1FileLink"),
+  sds2FileName: text("sds2FileName"),
+  sds2FileLink: text("sds2FileLink"),
+  tdsFileName: text("tdsFileName"),
+  tdsFileLink: text("tdsFileLink"),
+  
+  // Web structure and SEO
+  webStructure: text("webStructure"),
+  keywords: text("keywords"),
+  
+  // Images
+  webImage1Name: text("webImage1Name"),
+  webImage1Link: text("webImage1Link"),
+  webImage2Name: text("webImage2Name"),
+  webImage2Link: text("webImage2Link"),
+  webImage3Name: text("webImage3Name"),
+  webImage3Link: text("webImage3Link"),
+  webImage4Name: text("webImage4Name"),
+  webImage4Link: text("webImage4Link"),
+  webImage5Name: text("webImage5Name"),
+  webImage5Link: text("webImage5Link"),
+  
+  // Brochure
+  brochurePageName: text("brochurePageName"),
+  brochurePageLink: text("brochurePageLink"),
+  
+  // Date
+  lastUpdated: text("lastUpdated"),
+  
+  // Features (JSON array)
+  features: text("features"),
+  
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 });

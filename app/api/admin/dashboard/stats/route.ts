@@ -58,11 +58,97 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching total revenue:", error);
     }
 
+    // Get products by brand
+    let productsByBrand = [];
+    try {
+      const brandResult = await db
+        .select({ 
+          brand: product.brand,
+          count: sql<number>`count(*)`
+        })
+        .from(product)
+        .where(sql`${product.brand} IS NOT NULL`)
+        .groupBy(product.brand)
+        .orderBy(sql`count(*) DESC`)
+        .limit(10);
+      productsByBrand = brandResult;
+      console.log(`Products by brand: ${productsByBrand.length} brands`);
+    } catch (error) {
+      console.error("Error fetching products by brand:", error);
+    }
+
+    // Get products by category/group
+    let productsByCategory = [];
+    try {
+      const categoryResult = await db
+        .select({ 
+          category: product.group,
+          count: sql<number>`count(*)`
+        })
+        .from(product)
+        .where(sql`${product.group} IS NOT NULL`)
+        .groupBy(product.group)
+        .orderBy(sql`count(*) DESC`)
+        .limit(10);
+      productsByCategory = categoryResult;
+      console.log(`Products by category: ${productsByCategory.length} categories`);
+    } catch (error) {
+      console.error("Error fetching products by category:", error);
+    }
+
+    // Get recent products
+    let recentProducts = [];
+    try {
+      const recentResult = await db
+        .select({
+          sku: product.sku,
+          title: product.title,
+          brand: product.brand,
+          price: product.price,
+          createdAt: product.createdAt
+        })
+        .from(product)
+        .orderBy(sql`${product.createdAt} DESC`)
+        .limit(10);
+      recentProducts = recentResult;
+      console.log(`Recent products: ${recentProducts.length} products`);
+    } catch (error) {
+      console.error("Error fetching recent products:", error);
+    }
+
+    // Get price statistics
+    let priceStats = { min: 0, max: 0, avg: 0 };
+    try {
+      const priceResult = await db
+        .select({
+          min: sql<number>`min(${product.price})`,
+          max: sql<number>`max(${product.price})`,
+          avg: sql<number>`avg(${product.price})`
+        })
+        .from(product)
+        .where(sql`${product.price} IS NOT NULL AND ${product.price} > 0`);
+      
+      if (priceResult[0]) {
+        priceStats = {
+          min: priceResult[0].min || 0,
+          max: priceResult[0].max || 0,
+          avg: priceResult[0].avg || 0
+        };
+      }
+      console.log(`Price stats: min=${priceStats.min}, max=${priceStats.max}, avg=${priceStats.avg}`);
+    } catch (error) {
+      console.error("Error fetching price statistics:", error);
+    }
+
     const stats = {
       totalProducts,
       activeProducts,
       totalOrders,
       totalRevenue,
+      productsByBrand,
+      productsByCategory,
+      recentProducts,
+      priceStats
     };
 
     console.log("Dashboard stats fetched successfully:", stats);
