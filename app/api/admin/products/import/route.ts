@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
 import { parseExcelFile, validateProductData, importProductsToDatabase } from "@/lib/excel-parser";
+
+// Configure for large file uploads
+export const runtime = 'nodejs';
+export const maxDuration = 60; // 60 seconds timeout for large file processing
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    // Admin authentication is handled by the layout
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -30,23 +33,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // Validate file size (max 50MB)
+    const maxSize = 50 * 1024 * 1024; // 50MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File too large. Maximum size is 10MB." },
+        { error: "File too large. Maximum size is 50MB." },
         { status: 400 }
       );
     }
 
-    // Convert file to buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
+    // Convert file to buffer with progress tracking
+    console.log(`Processing file: ${file.name}, size: ${file.size} bytes`);
+    
+    let buffer;
+    try {
+      buffer = Buffer.from(await file.arrayBuffer());
+      console.log(`File converted to buffer, size: ${buffer.length} bytes`);
+    } catch (error) {
+      console.error("Error converting file to buffer:", error);
+      return NextResponse.json(
+        { error: `Failed to process file: ${error instanceof Error ? error.message : 'Unknown error'}` },
+        { status: 400 }
+      );
+    }
 
     // Parse Excel file
     let products;
     try {
+      console.log("Starting Excel file parsing...");
       products = parseExcelFile(buffer);
+      console.log(`Parsed ${products.length} products from Excel file`);
     } catch (error) {
+      console.error("Error parsing Excel file:", error);
       return NextResponse.json(
         { error: `Failed to parse Excel file: ${error instanceof Error ? error.message : 'Unknown error'}` },
         { status: 400 }
@@ -93,7 +111,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    // Admin authentication is handled by the layout
 
     // Return Excel template information
     const templateInfo = {

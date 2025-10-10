@@ -1,0 +1,18 @@
+{
+  "functions": {
+    "app/api/admin/products/import/route.ts": {
+      "maxDuration": 60
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/admin/products/import",
+      "headers": [
+        {
+          "key": "Access-Control-Max-Age",
+          "value": "86400"
+        }
+      ]
+    }
+  ]
+}

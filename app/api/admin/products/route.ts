@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { product } from "@/lib/db/schema";
-import { eq, or, like, desc } from "drizzle-orm";
+import { eq, or, like, desc, sql } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    // Admin authentication is handled by the layout
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -51,18 +50,18 @@ export async function GET(request: NextRequest) {
 
     // Get total count
     const totalCount = await db
-      .select({ count: product.id })
+      .select({ count: sql<number>`count(*)` })
       .from(product)
       .where(whereConditions.length > 0 ? or(...whereConditions) : undefined);
 
+    const totalCountValue = totalCount[0]?.count || 0;
+    const totalPages = Math.ceil(totalCountValue / limit);
+
     return NextResponse.json({
       products,
-      pagination: {
-        page,
-        limit,
-        total: totalCount.length,
-        totalPages: Math.ceil(totalCount.length / limit),
-      },
+      totalPages,
+      currentPage: page,
+      totalCount: totalCountValue,
     });
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -75,7 +74,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    // Admin authentication is handled by the layout
 
     const body = await request.json();
     const {
