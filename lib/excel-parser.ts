@@ -73,51 +73,127 @@ export function parseExcelFile(buffer: Buffer): ExcelProductRow[] {
 
     // Map headers to our expected format
     const headerMap: Record<string, string> = {
+      // SKU variations
       'SKU': 'sku',
       'Product Code': 'sku',
       'Product SKU': 'sku',
+      'Item Code': 'sku',
+      'Item Number': 'sku',
+      'Part Number': 'sku',
+      'Model': 'sku',
+      'Model Number': 'sku',
+      
+      // Title variations
       'Title': 'title',
       'Product Name': 'title',
       'Name': 'title',
+      'Product Title': 'title',
+      'Item Name': 'title',
+      
+      // Description variations
       'Description': 'description',
+      'Product Description': 'description',
+      'Details': 'description',
+      'Summary': 'description',
+      
+      // Price variations
       'Price': 'price',
       'Selling Price': 'price',
+      'Sale Price': 'price',
+      'Current Price': 'price',
+      'Unit Price': 'price',
       'Original Price': 'originalPrice',
       'MSRP': 'originalPrice',
-      'Size': 'size',
-      'Quantity': 'quantity',
-      'Package Quantity': 'quantity',
+      'List Price': 'originalPrice',
+      'Regular Price': 'originalPrice',
+      'Retail Price': 'originalPrice',
+      
+      // Category variations
       'Category': 'category',
       'Product Category': 'category',
+      'Type': 'category',
+      'Product Type': 'category',
+      'Classification': 'category',
+      
+      // Image variations
       'Image': 'image',
       'Main Image': 'image',
+      'Primary Image': 'image',
+      'Thumbnail': 'image',
       'Images': 'images',
       'Product Images': 'images',
+      'Gallery': 'images',
+      'Photo Gallery': 'images',
+      
+      // Specifications variations
       'Specifications': 'specifications',
       'Specs': 'specifications',
+      'Features': 'specifications',
+      'Attributes': 'specifications',
+      'Properties': 'specifications',
+      
+      // Availability variations
       'Availability': 'availability',
       'Stock Status': 'availability',
+      'Status': 'availability',
+      'In Stock': 'availability',
+      'Available': 'availability',
+      
+      // Boolean fields
       'Active': 'isActive',
       'Is Active': 'isActive',
+      'Enabled': 'isActive',
+      'Visible': 'isActive',
+      'Published': 'isActive',
       'Featured': 'isFeatured',
       'Is Featured': 'isFeatured',
+      'Highlighted': 'isFeatured',
+      'Promoted': 'isFeatured',
+      
+      // Inventory variations
       'Stock Quantity': 'stockQuantity',
       'Inventory': 'stockQuantity',
+      'Quantity': 'stockQuantity',
+      'Stock': 'stockQuantity',
+      'Available Quantity': 'stockQuantity',
+      'On Hand': 'stockQuantity',
       'Min Order': 'minOrderQuantity',
       'Min Order Quantity': 'minOrderQuantity',
+      'Minimum Order': 'minOrderQuantity',
+      'Min Qty': 'minOrderQuantity',
       'Max Order': 'maxOrderQuantity',
       'Max Order Quantity': 'maxOrderQuantity',
+      'Maximum Order': 'maxOrderQuantity',
+      'Max Qty': 'maxOrderQuantity',
+      
+      // Physical attributes
+      'Size': 'size',
+      'Product Size': 'size',
       'Weight': 'weight',
       'Weight (kg)': 'weight',
+      'Weight (lbs)': 'weight',
+      'Weight (pounds)': 'weight',
       'Dimensions': 'dimensions',
       'Size (cm)': 'dimensions',
+      'Size (inches)': 'dimensions',
+      'Length': 'dimensions',
+      'Width': 'dimensions',
+      'Height': 'dimensions',
+      
+      // Tags and SEO
       'Tags': 'tags',
+      'Product Tags': 'tags',
+      'Keywords': 'tags',
+      'Labels': 'tags',
       'SEO Title': 'seoTitle',
       'Meta Title': 'seoTitle',
+      'Page Title': 'seoTitle',
       'SEO Description': 'seoDescription',
       'Meta Description': 'seoDescription',
-      'Keywords': 'metaKeywords',
+      'Page Description': 'seoDescription',
       'Meta Keywords': 'metaKeywords',
+      'SEO Keywords': 'metaKeywords',
+      'Search Keywords': 'metaKeywords',
     };
 
     // Convert data rows to objects
