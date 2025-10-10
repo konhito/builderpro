@@ -1,86 +1,87 @@
-import { requireAdmin } from "@/lib/admin-auth";
-import { db } from "@/lib/db";
-import { product, order, user } from "@/lib/db/schema";
-import { count, eq, sql } from "drizzle-orm";
-import AdminStats from "@/components/admin/AdminStats";
-import RecentOrders from "@/components/admin/RecentOrders";
-import TopProducts from "@/components/admin/TopProducts";
+"use client";
 
-export default async function AdminDashboard() {
-  const session = await requireAdmin();
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-  // Get dashboard statistics
-  const [
-    totalProducts,
-    activeProducts,
-    totalOrders,
-    totalUsers,
-    recentOrders,
-    topProducts,
-  ] = await Promise.all([
-    // Total products
-    db.select({ count: count() }).from(product),
-    
-    // Active products
-    db.select({ count: count() }).from(product).where(eq(product.isActive, true)),
-    
-    // Total orders
-    db.select({ count: count() }).from(order),
-    
-    // Total users
-    db.select({ count: count() }).from(user),
-    
-    // Recent orders (last 10)
-    db.select({
-      id: order.id,
-      orderNumber: order.orderNumber,
-      status: order.status,
-      totalAmount: order.totalAmount,
-      createdAt: order.createdAt,
-      user: {
-        name: user.name,
-        email: user.email,
-      },
-    })
-    .from(order)
-    .leftJoin(user, eq(order.userId, user.id))
-    .orderBy(sql`${order.createdAt} DESC`)
-    .limit(10),
-    
-    // Top products by order count
-    db.select({
-      sku: product.sku,
-      title: product.title,
-      orderCount: sql<number>`COUNT(${order.id})`,
-    })
-    .from(product)
-    .leftJoin(order, sql`JSON_EXTRACT(${order.id}, '$.items') LIKE CONCAT('%', ${product.sku}, '%')`)
-    .groupBy(product.id, product.sku, product.title)
-    .orderBy(sql`COUNT(${order.id}) DESC`)
-    .limit(5),
-  ]);
+export default function AdminLoginPage() {
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const stats = {
-    totalProducts: totalProducts[0]?.count || 0,
-    activeProducts: activeProducts[0]?.count || 0,
-    totalOrders: totalOrders[0]?.count || 0,
-    totalUsers: totalUsers[0]?.count || 0,
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    // Hardcoded admin password
+    if (password === "admin123") {
+      // Set a simple session flag in localStorage
+      localStorage.setItem("admin_logged_in", "true");
+      localStorage.setItem("admin_user", JSON.stringify({
+        id: "admin-hardcoded",
+        name: "Admin User",
+        email: "admin@timco.com",
+        role: "super_admin"
+      }));
+      
+      // Redirect to admin dashboard
+      router.push("/admin/dashboard");
+    } else {
+      setError("Invalid password. Use: admin123");
+    }
+    
+    setLoading(false);
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Welcome back, {session.user.name}! Here&apos;s what&apos;s happening with your store.
-        </p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Admin Login
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Enter admin password to access the dashboard
+          </p>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="password" className="sr-only">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Admin password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-      <AdminStats stats={stats} />
-      
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <RecentOrders orders={recentOrders} />
-        <TopProducts products={topProducts} />
+          {error && (
+            <div className="text-red-600 text-sm text-center">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            >
+              {loading ? "Signing in..." : "Sign in"}
+            </button>
+          </div>
+
+          <div className="text-center text-sm text-gray-500">
+            <p>Default password: <code className="bg-gray-100 px-1 rounded">admin123</code></p>
+          </div>
+        </form>
       </div>
     </div>
   );
