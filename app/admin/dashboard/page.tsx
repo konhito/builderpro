@@ -200,7 +200,7 @@ export default function AdminDashboard() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
                       <dd className="text-lg font-medium text-gray-900">
-                        {statsLoading ? "..." : `$${stats.totalRevenue.toLocaleString()}`}
+                        {statsLoading ? "..." : `$${(stats.totalRevenue || 0).toLocaleString()}`}
                       </dd>
                     </dl>
                   </div>

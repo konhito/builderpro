@@ -3,14 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import ProductEditModal from "@/components/admin/ProductEditModal";
 
 interface Product {
   id: string;
   sku: string;
   title: string;
   description: string;
-  price: number;
-  originalPrice?: number;
+  price: string | number;
+  originalPrice?: string | number;
   category: string;
   image?: string;
   images?: string;
@@ -33,6 +34,8 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [bulkAction, setBulkAction] = useState("");
   const [showBulkActions, setShowBulkActions] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const router = useRouter();
   const searchParamsHook = useSearchParams();
 
@@ -149,6 +152,44 @@ export default function ProductsPage() {
     setShowBulkActions(selectedProducts.length > 0);
   }, [selectedProducts]);
 
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setShowEditModal(true);
+  };
+
+  const handleAddProduct = () => {
+    setEditingProduct(null);
+    setShowEditModal(true);
+  };
+
+  const handleSaveProduct = (savedProduct: Product) => {
+    if (editingProduct) {
+      // Update existing product in the list
+      setProducts(products.map(p => p.id === savedProduct.id ? savedProduct : p));
+    } else {
+      // Add new product to the list
+      setProducts([savedProduct, ...products]);
+    }
+    setShowEditModal(false);
+    setEditingProduct(null);
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (confirm('Are you sure you want to delete this product?')) {
+      try {
+        const response = await fetch(`/api/admin/products/${productId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          setProducts(products.filter(p => p.id !== productId));
+        }
+      } catch (error) {
+        console.error('Error deleting product:', error);
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -169,15 +210,15 @@ export default function ProductsPage() {
             </svg>
             Import
           </Link>
-          <Link
-            href="/admin/products/new"
+          <button
+            onClick={handleAddProduct}
             className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Add Product
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -351,10 +392,12 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div>
-                        <div className="font-medium">${product.price.toFixed(2)}</div>
-                        {product.originalPrice && product.originalPrice > product.price && (
+                        <div className="font-medium">
+                          ${product.price ? parseFloat(product.price.toString()).toFixed(2) : '0.00'}
+                        </div>
+                        {product.originalPrice && product.originalPrice > (product.price || 0) && (
                           <div className="text-xs text-gray-500 line-through">
-                            ${product.originalPrice.toFixed(2)}
+                            ${parseFloat(product.originalPrice.toString()).toFixed(2)}
                           </div>
                         )}
                       </div>
@@ -373,18 +416,14 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
-                        <Link
-                          href={`/admin/products/${product.id}/edit`}
+                        <button
+                          onClick={() => handleEditProduct(product)}
                           className="text-indigo-600 hover:text-indigo-900"
                         >
                           Edit
-                        </Link>
+                        </button>
                         <button
-                          onClick={() => {
-                            if (confirm('Are you sure you want to delete this product?')) {
-                              // Handle delete
-                            }
-                          }}
+                          onClick={() => handleDeleteProduct(product.id)}
                           className="text-red-600 hover:text-red-900"
                         >
                           Delete
@@ -446,6 +485,17 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
+
+      {/* Product Edit Modal */}
+      <ProductEditModal
+        product={editingProduct}
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingProduct(null);
+        }}
+        onSave={handleSaveProduct}
+      />
     </div>
   );
 }
