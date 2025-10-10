@@ -255,7 +255,7 @@ export async function importProductsToDatabase(products: ExcelProductRow[]): Pro
   };
 
   // Process products in batches to reduce memory usage
-  const BATCH_SIZE = 50;
+  const BATCH_SIZE = 25;
   const batches = [];
   for (let i = 0; i < products.length; i += BATCH_SIZE) {
     batches.push(products.slice(i, i + BATCH_SIZE));
@@ -333,7 +333,12 @@ export async function importProductsToDatabase(products: ExcelProductRow[]): Pro
 
     // Small delay between batches to prevent overwhelming the database
     if (batchIndex < batches.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Force garbage collection between batches
+      if (global.gc) {
+        global.gc();
+      }
     }
   }
 

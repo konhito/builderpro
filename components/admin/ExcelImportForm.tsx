@@ -57,10 +57,10 @@ export default function ExcelImportForm() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      // Check file size (10MB limit)
-      const maxSize = 10 * 1024 * 1024; // 10MB
+      // Check file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
       if (selectedFile.size > maxSize) {
-        error(`File too large. Maximum size is 10MB. Your file is ${(selectedFile.size / 1024 / 1024).toFixed(2)}MB. Please split your file into smaller chunks.`);
+        error(`File too large. Maximum size is 5MB. Your file is ${(selectedFile.size / 1024 / 1024).toFixed(2)}MB. Please split your file into smaller chunks.`);
         return;
       }
       
@@ -169,7 +169,7 @@ export default function ExcelImportForm() {
             </h3>
             <div className="mt-2 text-sm text-yellow-700">
               <p>
-                Maximum file size is <strong>10MB</strong>. If your file is larger, please split it into smaller chunks.
+                Maximum file size is <strong>5MB</strong>. If your file is larger, please split it into smaller chunks.
               </p>
             </div>
           </div>

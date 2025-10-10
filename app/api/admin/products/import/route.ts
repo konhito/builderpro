@@ -34,16 +34,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (max 10MB for Vercel free tier)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // Validate file size (max 5MB for Vercel free tier)
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File too large. Maximum size is 10MB. Please split your file into smaller chunks." },
+        { error: "File too large. Maximum size is 5MB. Please split your file into smaller chunks." },
         { status: 400 }
       );
     }
 
-    // Convert file to buffer with progress tracking
+    // Convert file to buffer with streaming approach
     console.log(`Processing file: ${file.name}, size: ${file.size} bytes`);
     
     let buffer;
@@ -53,8 +53,13 @@ export async function POST(request: NextRequest) {
       buffer = Buffer.from(arrayBuffer);
       console.log(`File converted to buffer, size: ${buffer.length} bytes`);
       
-      // Clear arrayBuffer to free memory
+      // Clear arrayBuffer to free memory immediately
       (arrayBuffer as any) = null;
+      
+      // Force garbage collection if available
+      if (global.gc) {
+        global.gc();
+      }
     } catch (error) {
       console.error("Error converting file to buffer:", error);
       return NextResponse.json(
