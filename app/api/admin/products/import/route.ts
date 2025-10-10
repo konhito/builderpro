@@ -3,7 +3,8 @@ import { parseExcelFile, validateProductData, importProductsToDatabase } from "@
 
 // Configure for large file uploads
 export const runtime = 'nodejs';
-export const maxDuration = 60; // 60 seconds timeout for large file processing
+export const maxDuration = 300; // 5 minutes timeout for large file processing
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,11 +34,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (max 50MB)
-    const maxSize = 50 * 1024 * 1024; // 50MB
+    // Validate file size (max 10MB for Vercel free tier)
+    const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File too large. Maximum size is 50MB." },
+        { error: "File too large. Maximum size is 10MB. Please split your file into smaller chunks." },
         { status: 400 }
       );
     }
@@ -47,8 +48,13 @@ export async function POST(request: NextRequest) {
     
     let buffer;
     try {
-      buffer = Buffer.from(await file.arrayBuffer());
+      // Use streaming approach for large files
+      const arrayBuffer = await file.arrayBuffer();
+      buffer = Buffer.from(arrayBuffer);
       console.log(`File converted to buffer, size: ${buffer.length} bytes`);
+      
+      // Clear arrayBuffer to free memory
+      (arrayBuffer as any) = null;
     } catch (error) {
       console.error("Error converting file to buffer:", error);
       return NextResponse.json(
@@ -57,12 +63,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse Excel file
+    // Parse Excel file with memory optimization
     let products;
     try {
       console.log("Starting Excel file parsing...");
       products = parseExcelFile(buffer);
       console.log(`Parsed ${products.length} products from Excel file`);
+      
+      // Clear buffer to free memory
+      buffer = null as any;
     } catch (error) {
       console.error("Error parsing Excel file:", error);
       return NextResponse.json(
@@ -90,8 +99,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Import products to database
+    // Import products to database in batches to reduce memory usage
+    console.log(`Starting import of ${products.length} products...`);
     const importResult = await importProductsToDatabase(products);
+
+    // Force garbage collection if available
+    if (global.gc) {
+      global.gc();
+    }
 
     return NextResponse.json({
       success: true,

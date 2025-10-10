@@ -1,7 +1,8 @@
 {
   "functions": {
     "app/api/admin/products/import/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "memory": 1024
     }
   },
   "headers": [

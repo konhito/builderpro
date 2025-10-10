@@ -46,11 +46,17 @@ export interface ImportResult {
 
 export function parseExcelFile(buffer: Buffer): ExcelProductRow[] {
   try {
-    const workbook = XLSX.read(buffer, { type: 'buffer' });
+    // Use memory-efficient options for large files
+    const workbook = XLSX.read(buffer, { 
+      type: 'buffer',
+      cellDates: false,
+      cellNF: false,
+      cellText: false
+    });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     
-    // Convert to JSON
+    // Convert to JSON with memory optimization
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
       header: 1,
       defval: '',
@@ -248,9 +254,22 @@ export async function importProductsToDatabase(products: ExcelProductRow[]): Pro
     warnings: [],
   };
 
-  for (let i = 0; i < products.length; i++) {
-    const productData = products[i];
-    const rowNumber = i + 2;
+  // Process products in batches to reduce memory usage
+  const BATCH_SIZE = 50;
+  const batches = [];
+  for (let i = 0; i < products.length; i += BATCH_SIZE) {
+    batches.push(products.slice(i, i + BATCH_SIZE));
+  }
+
+  console.log(`Processing ${products.length} products in ${batches.length} batches of ${BATCH_SIZE}`);
+
+  for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+    const batch = batches[batchIndex];
+    console.log(`Processing batch ${batchIndex + 1}/${batches.length} (${batch.length} products)`);
+
+    for (let i = 0; i < batch.length; i++) {
+      const productData = batch[i];
+      const rowNumber = (batchIndex * BATCH_SIZE) + i + 2;
 
     try {
       // Check if product exists
@@ -309,6 +328,12 @@ export async function importProductsToDatabase(products: ExcelProductRow[]): Pro
         error: error instanceof Error ? error.message : 'Unknown error',
       });
       result.failed++;
+    }
+    }
+
+    // Small delay between batches to prevent overwhelming the database
+    if (batchIndex < batches.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
 
