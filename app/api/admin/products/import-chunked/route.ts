@@ -41,11 +41,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (max 2MB per chunk)
-    const maxSize = 2 * 1024 * 1024; // 2MB per chunk
+    // Validate file size (max 20MB for single file upload)
+    const maxSize = 20 * 1024 * 1024; // 20MB for single file
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "Chunk too large. Maximum size per chunk is 2MB." },
+        { error: "File too large. Maximum size is 20MB. Please split your file into smaller files manually." },
         { status: 400 }
       );
     }

@@ -52,7 +52,13 @@ export default function ChunkedUploadForm() {
       // Check file size (max 20MB total)
       const maxSize = 20 * 1024 * 1024; // 20MB
       if (selectedFile.size > maxSize) {
-        error(`File too large. Maximum size is 20MB. Your file is ${(selectedFile.size / 1024 / 1024).toFixed(2)}MB. Please split your file into smaller chunks.`);
+        error(`File too large. Maximum size is 20MB. Your file is ${(selectedFile.size / 1024 / 1024).toFixed(2)}MB. Please split your file into smaller files manually.`);
+        return;
+      }
+      
+      // Check if file is too large for chunked upload (Excel files can't be split)
+      if (selectedFile.size > CHUNK_SIZE) {
+        error(`File is ${(selectedFile.size / 1024 / 1024).toFixed(2)}MB. For files larger than 2MB, please use the standard upload method (up to 5MB) or split your Excel file manually.`);
         return;
       }
       
@@ -65,16 +71,15 @@ export default function ChunkedUploadForm() {
   };
 
   const splitFileIntoChunks = (file: File): Blob[] => {
-    const chunks: Blob[] = [];
-    let start = 0;
-    
-    while (start < file.size) {
-      const end = Math.min(start + CHUNK_SIZE, file.size);
-      chunks.push(file.slice(start, end));
-      start = end;
+    // For Excel files, we can't split them into arbitrary chunks because they're ZIP archives
+    // Instead, we'll upload the entire file as a single chunk for files under 20MB
+    if (file.size <= CHUNK_SIZE) {
+      return [file];
     }
     
-    return chunks;
+    // For files larger than 2MB, we need to use a different approach
+    // For now, we'll show an error and suggest using the standard upload
+    throw new Error(`File too large for chunked upload. Please use the standard upload for files under 5MB, or split your Excel file into smaller files manually.`);
   };
 
   const uploadChunk = async (chunk: Blob, chunkIndex: number, totalChunks: number): Promise<ChunkResult> => {
@@ -112,49 +117,43 @@ export default function ChunkedUploadForm() {
     setTotalFailed(0);
 
     try {
-      // Split file into chunks
+      // Upload single file (no chunking for Excel files)
       const chunks = splitFileIntoChunks(file);
       const totalChunks = chunks.length;
       
-      console.log(`Splitting file into ${totalChunks} chunks of max ${CHUNK_SIZE / 1024 / 1024}MB each`);
+      console.log(`Uploading single file: ${file.name}`);
 
       const results: ChunkResult[] = [];
       let totalProductsProcessed = 0;
       let totalSuccessCount = 0;
       let totalFailedCount = 0;
 
-      // Upload chunks sequentially to avoid overwhelming the server
-      for (let i = 0; i < chunks.length; i++) {
-        try {
-          console.log(`Uploading chunk ${i + 1}/${totalChunks}`);
-          const result = await uploadChunk(chunks[i], i, totalChunks);
-          results.push(result);
-          
-          totalProductsProcessed += result.productsProcessed;
-          totalSuccessCount += result.import.success;
-          totalFailedCount += result.import.failed;
-          
-          setChunkResults([...results]);
-          setTotalProducts(totalProductsProcessed);
-          setTotalSuccess(totalSuccessCount);
-          setTotalFailed(totalFailedCount);
-          
-          setUploadProgress(((i + 1) / totalChunks) * 100);
-          
-          // Small delay between chunks
-          if (i < chunks.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-          }
-        } catch (error) {
-          console.error(`Error uploading chunk ${i + 1}:`, error);
-          error(`Failed to upload chunk ${i + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
+      // Upload the single file
+      try {
+        console.log(`Uploading file...`);
+        const result = await uploadChunk(chunks[0], 0, totalChunks);
+        results.push(result);
+        
+        totalProductsProcessed += result.productsProcessed;
+        totalSuccessCount += result.import.success;
+        totalFailedCount += result.import.failed;
+        
+        setChunkResults([...results]);
+        setTotalProducts(totalProductsProcessed);
+        setTotalSuccess(totalSuccessCount);
+        setTotalFailed(totalFailedCount);
+        
+        setUploadProgress(100);
+        
+      } catch (error) {
+        console.error(`Error uploading file:`, error);
+        error(`Failed to upload file: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
 
-      success(`Successfully processed ${totalChunks} chunks. ${totalSuccessCount} products imported successfully, ${totalFailedCount} failed.`);
+      success(`Successfully processed file. ${totalSuccessCount} products imported successfully, ${totalFailedCount} failed.`);
       
     } catch (error) {
-      console.error("Error during chunked upload:", error);
+      console.error("Error during upload:", error);
       error(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsUploading(false);
@@ -193,8 +192,8 @@ export default function ChunkedUploadForm() {
             </h3>
             <div className="mt-2 text-sm text-yellow-700">
               <p>
-                Large files will be automatically split into 2MB chunks for processing.
-                Maximum total file size is <strong>20MB</strong>.
+                This method is for files up to <strong>2MB</strong>. Excel files cannot be split into chunks.
+                For larger files, use the standard upload method (up to 5MB) or split your Excel file manually.
               </p>
             </div>
           </div>
@@ -229,14 +228,14 @@ export default function ChunkedUploadForm() {
                     </label>
                     <p className="pl-1">or drag and drop</p>
                   </div>
-                  <p className="text-xs text-gray-500">Excel (.xlsx, .xls) or CSV files up to 20MB</p>
+                  <p className="text-xs text-gray-500">Excel (.xlsx, .xls) or CSV files up to 2MB</p>
                 </div>
               </div>
               
               {file && (
                 <div className="mt-2 text-sm text-gray-600">
                   <p>Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
-                  <p>Will be split into {Math.ceil(file.size / CHUNK_SIZE)} chunks of 2MB each</p>
+                  <p>Ready for upload</p>
                 </div>
               )}
             </div>
@@ -245,7 +244,7 @@ export default function ChunkedUploadForm() {
             {isUploading && (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm text-gray-600">
-                  <span>Uploading chunks...</span>
+                  <span>Uploading file...</span>
                   <span>{Math.round(uploadProgress)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -318,13 +317,13 @@ export default function ChunkedUploadForm() {
               </div>
             </div>
 
-            {/* Chunk Details */}
+            {/* Upload Details */}
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-900">Chunk Details:</h4>
+              <h4 className="text-sm font-medium text-gray-900">Upload Details:</h4>
               {chunkResults.map((result, index) => (
                 <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                   <span className="text-sm text-gray-600">
-                    Chunk {result.chunkIndex + 1}: {result.productsProcessed} products
+                    File: {result.productsProcessed} products processed
                   </span>
                   <span className={`text-sm font-medium ${result.success ? 'text-green-600' : 'text-red-600'}`}>
                     {result.success ? 'Success' : 'Failed'}
