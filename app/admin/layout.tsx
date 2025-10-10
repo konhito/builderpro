@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function AdminLayout({
   children,
@@ -10,9 +10,23 @@ export default function AdminLayout({
 }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    // If we're on the admin login page, don't check authentication
+    if (pathname === "/admin") {
+      setLoading(false);
+      return;
+    }
+
     // Check if admin is logged in via localStorage
     const isLoggedIn = localStorage.getItem("admin_logged_in");
     const userData = localStorage.getItem("admin_user");
@@ -38,7 +52,17 @@ export default function AdminLayout({
     }
 
     setLoading(false);
-  }, [router]);
+  }, [mounted, pathname, router]);
+
+  // Don't render anything until mounted (prevents hydration mismatch)
+  if (!mounted) {
+    return null;
+  }
+
+  // If we're on the admin login page, render children directly
+  if (pathname === "/admin") {
+    return <>{children}</>;
+  }
 
   if (loading) {
     return (
