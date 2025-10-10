@@ -199,7 +199,7 @@ export default function ExcelImportForm() {
                         id="file"
                         name="file"
                         type="file"
-                        accept=".xlsx,.xls,.csv"
+                        accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
                         onChange={handleFileChange}
                         className="sr-only"
                       />

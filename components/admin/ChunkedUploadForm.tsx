@@ -221,7 +221,7 @@ export default function ChunkedUploadForm() {
                         id="file-upload"
                         name="file-upload"
                         type="file"
-                        accept=".xlsx,.xls,.csv"
+                        accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
                         onChange={handleFileChange}
                         className="sr-only"
                         disabled={isUploading}

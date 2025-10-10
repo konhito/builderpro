@@ -20,16 +20,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
+    // Validate file type - check both MIME type and file extension
     const allowedTypes = [
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
       'application/vnd.ms-excel', // .xls
       'text/csv', // .csv
+      'application/octet-stream', // Sometimes Excel files have this MIME type
+      'application/zip' // .xlsx files are actually ZIP files
     ];
-
-    if (!allowedTypes.includes(file.type)) {
+    
+    const allowedExtensions = ['.xlsx', '.xls', '.csv'];
+    const fileName = file.name.toLowerCase();
+    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+    
+    if (!allowedTypes.includes(file.type) && !hasValidExtension) {
+      console.log(`File type validation failed. MIME type: ${file.type}, File name: ${file.name}`);
       return NextResponse.json(
-        { error: "Invalid file type. Please upload an Excel file (.xlsx, .xls) or CSV file." },
+        { error: `Invalid file type. Detected MIME type: ${file.type}. Please upload an Excel file (.xlsx, .xls) or CSV file.` },
         { status: 400 }
       );
     }
