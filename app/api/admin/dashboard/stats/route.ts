@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       const totalRevenueResult = await db
         .select({ total: sql<number>`coalesce(sum(${order.totalAmount}), 0)` })
         .from(order);
-      totalRevenue = totalRevenueResult[0]?.total || 0;
+      totalRevenue = Number(totalRevenueResult[0]?.total) || 0;
       console.log(`Total revenue: ${totalRevenue}`);
     } catch (error) {
       console.error("Error fetching total revenue:", error);
@@ -130,9 +130,9 @@ export async function GET(request: NextRequest) {
       
       if (priceResult[0]) {
         priceStats = {
-          min: priceResult[0].min || 0,
-          max: priceResult[0].max || 0,
-          avg: priceResult[0].avg || 0
+          min: Number(priceResult[0].min) || 0,
+          max: Number(priceResult[0].max) || 0,
+          avg: Number(priceResult[0].avg) || 0
         };
       }
       console.log(`Price stats: min=${priceStats.min}, max=${priceStats.max}, avg=${priceStats.avg}`);

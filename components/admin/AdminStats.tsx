@@ -63,7 +63,7 @@ export default function AdminStats({ stats: statsData }: AdminStatsProps) {
             </dt>
             <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
               <p className="text-2xl font-semibold text-gray-900">
-                {value.toLocaleString()}
+                {Number(value || 0).toLocaleString()}
               </p>
             </dd>
           </div>
