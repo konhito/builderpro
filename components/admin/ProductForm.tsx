@@ -401,7 +401,7 @@ export default function ProductForm({ initialData, isEdit = false, productId }: 
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
                   <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                    Price (£)
+                    Price (€)
                   </label>
                   <input
                     type="number"
@@ -416,7 +416,7 @@ export default function ProductForm({ initialData, isEdit = false, productId }: 
 
                 <div>
                   <label htmlFor="originalPrice" className="block text-sm font-medium text-gray-700">
-                    Original Price (£)
+                    Original Price (€)
                   </label>
                   <input
                     type="number"

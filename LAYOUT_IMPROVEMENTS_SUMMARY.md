@@ -47,7 +47,7 @@ Comprehensive layout improvements to differentiate BuildPro from TIMCO and enhan
 
 // Mobile
 <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 flex items-center justify-between">
-  <span className="text-sm font-semibold">🎉 Free Shipping $500+</span>
+  <span className="text-sm font-semibold">🎉 Free Shipping €500+</span>
   <Link href="/register" className="bg-white text-orange-600 px-3 py-1.5 rounded-full">
     Register
   </Link>

@@ -165,7 +165,7 @@ The system recognizes multiple column name variations:
 ### **Data Format Issues:**
 
 #### **Price not importing correctly**
-- Use numeric values (15.99) not text ("$15.99")
+- Use numeric values (15.99) not text ("€15.99")
 - Avoid currency symbols in price columns
 
 #### **Images not working**

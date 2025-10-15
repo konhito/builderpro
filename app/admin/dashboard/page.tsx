@@ -218,7 +218,7 @@ export default function AdminDashboard() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
                       <dd className="text-lg font-medium text-gray-900">
-                        {statsLoading ? "..." : `$${(stats.totalRevenue || 0).toLocaleString()}`}
+                        {statsLoading ? "..." : `€${(stats.totalRevenue || 0).toLocaleString()}`}
                       </dd>
                     </dl>
                   </div>
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Average Price</dt>
                       <dd className="text-lg font-medium text-gray-900">
-                        {statsLoading ? "..." : `$${Number(stats.priceStats?.avg || 0).toFixed(2)}`}
+                        {statsLoading ? "..." : `€${Number(stats.priceStats?.avg || 0).toFixed(2)}`}
                       </dd>
                     </dl>
                   </div>
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Min Price</dt>
                       <dd className="text-lg font-medium text-gray-900">
-                        {statsLoading ? "..." : `$${Number(stats.priceStats?.min || 0).toFixed(2)}`}
+                        {statsLoading ? "..." : `€${Number(stats.priceStats?.min || 0).toFixed(2)}`}
                       </dd>
                     </dl>
                   </div>
@@ -287,7 +287,7 @@ export default function AdminDashboard() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Max Price</dt>
                       <dd className="text-lg font-medium text-gray-900">
-                        {statsLoading ? "..." : `$${Number(stats.priceStats?.max || 0).toFixed(2)}`}
+                        {statsLoading ? "..." : `€${Number(stats.priceStats?.max || 0).toFixed(2)}`}
                       </dd>
                     </dl>
                   </div>
@@ -476,7 +476,7 @@ export default function AdminDashboard() {
                             {product.brand}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ${Number(product.price || 0).toFixed(2)}
+                            €{Number(product.price || 0).toFixed(2)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(product.createdAt).toLocaleDateString()}

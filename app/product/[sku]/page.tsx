@@ -174,7 +174,7 @@ export default async function ProductPage({
 
           {product.price && (
             <div className="text-3xl font-bold text-blue-700">
-              {product.price}
+              €{Number(product.price).toFixed(2)}
             </div>
           )}
 
