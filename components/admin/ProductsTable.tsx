@@ -184,7 +184,7 @@ export default function ProductsTable({
                       {product.sku}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.price ? `€${product.price}` : "No price"}
+                      {product.price ? `£${product.price}` : "No price"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {product.stockQuantity || 0}

@@ -18,6 +18,7 @@ type Product = {
 type EnrichedProduct = Product & {
   description?: string;
   price?: string;
+  originalPrice?: string;
   images?: string[];
   specifications?: Record<string, string>;
   availability?: string;
@@ -173,8 +174,34 @@ export default async function ProductPage({
           </div>
 
           {product.price && (
-            <div className="text-3xl font-bold text-blue-700">
-              €{Number(product.price).toFixed(2)}
+            <div>
+              {product.originalPrice && product.originalPrice !== product.price ? (
+                <>
+                  {Number(product.originalPrice) > Number(product.price) ? (
+                    <>
+                      <div className="text-lg text-gray-500 line-through">
+                        £{Number(product.originalPrice).toFixed(2)}
+                      </div>
+                      <div className="text-3xl font-bold text-blue-700">
+                        £{Number(product.price).toFixed(2)}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-lg text-gray-500 line-through">
+                        £{Number(product.price).toFixed(2)}
+                      </div>
+                      <div className="text-3xl font-bold text-blue-700">
+                        £{Number(product.originalPrice).toFixed(2)}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <div className="text-3xl font-bold text-blue-700">
+                  £{Number(product.price).toFixed(2)}
+                </div>
+              )}
             </div>
           )}
 

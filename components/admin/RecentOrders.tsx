@@ -56,7 +56,7 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
                         {order.status}
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        €{order.totalAmount}
+                        £{order.totalAmount}
                       </span>
                     </div>
                   </div>

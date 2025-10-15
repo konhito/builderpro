@@ -392,12 +392,31 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div>
-                        <div className="font-medium">
-                          €{product.price ? parseFloat(product.price.toString()).toFixed(2) : '0.00'}
-                        </div>
-                        {product.originalPrice && product.originalPrice > (product.price || 0) && (
-                          <div className="text-xs text-gray-500 line-through">
-                            €{parseFloat(product.originalPrice.toString()).toFixed(2)}
+                        {product.originalPrice && product.price && product.originalPrice !== product.price ? (
+                          <>
+                            {product.originalPrice > product.price ? (
+                              <>
+                                <div className="text-xs text-gray-500 line-through">
+                                  £{parseFloat(product.originalPrice.toString()).toFixed(2)}
+                                </div>
+                                <div className="font-medium">
+                                  £{parseFloat(product.price.toString()).toFixed(2)}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="text-xs text-gray-500 line-through">
+                                  £{parseFloat(product.price.toString()).toFixed(2)}
+                                </div>
+                                <div className="font-medium">
+                                  £{parseFloat(product.originalPrice.toString()).toFixed(2)}
+                                </div>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <div className="font-medium">
+                            £{product.price ? parseFloat(product.price.toString()).toFixed(2) : '0.00'}
                           </div>
                         )}
                       </div>
